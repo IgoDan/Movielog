@@ -6,8 +6,9 @@ import './index.css'
 import App from './App.jsx'
 import theme from '../theme.js'
 import Home from './pages/Home.jsx'
-import Games from './pages/Games.jsx'
-import MyList from './pages/MyList.jsx'
+import Movies from './pages/Movies.jsx'
+import Shows from './pages/Shows.jsx'
+import Watchlist from './pages/Watchlist.jsx'
 
 const router = createBrowserRouter([
   {
@@ -19,12 +20,16 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: '/games',
-        element: <Games />,
+        path: '/movies',
+        element: <Movies />,
       },
       {
-        path: '/mylist',
-        element: <MyList />,
+        path: '/shows',
+        element: <Shows />,
+      },
+      {
+        path: '/watchlist',
+        element: <Watchlist />,
       }
     ],
   },

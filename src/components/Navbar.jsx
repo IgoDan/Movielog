@@ -8,14 +8,15 @@ const Navbar = () => {
                 <Flex justifyContent={"space-between"}>
                     <Link to="/">
                         <Box fontSize={"2xl"} fontWeight={"bold"} color={"white"} letterSpacing={"widest"} fontFamily={"mono"} >
-                            GAMELOG
+                            MOVIELOG
                         </Box>
                     </Link>
                     {/*Desktop*/}
                     <Flex gap="4" alignItems="center">
                         <Link to='/'>Home</Link>
-                        <Link to='/games'>All Games</Link>
-                        <Link to='/mylist'>My List</Link>
+                        <Link to='/movies'>Movies</Link>
+                        <Link to='/shows'>Shows</Link>
+                        <Link to='/watchlist'>Watchlist</Link>
                     </Flex>
                 </Flex>
             </Container>

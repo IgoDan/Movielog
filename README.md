@@ -1,2 +1,2 @@
-# Gamelog
-App for logging completed video games
+# Movielog
+App for logging watched movies and TV shows.

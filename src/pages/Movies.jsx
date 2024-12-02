@@ -1,13 +1,13 @@
 import { Container, Heading } from "@chakra-ui/react"
 
-const Games = () => {
+const Movies = () => {
     return (
         <Container maxW={"container.xl"}>
             <Heading as="h2" fontSize={"md"} textTransform={"uppercase"}>
-                All Games
+                Movies
             </Heading>
         </Container>
     );
 };
 
-export default Games
+export default Movies
