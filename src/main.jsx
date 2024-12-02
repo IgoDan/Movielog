@@ -9,6 +9,7 @@ import Home from './pages/Home.jsx'
 import Movies from './pages/Movies.jsx'
 import Shows from './pages/Shows.jsx'
 import Watchlist from './pages/Watchlist.jsx'
+import Details from './pages/Details.jsx'
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: '/watchlist',
         element: <Watchlist />,
+      },
+      {
+        path: '/:type/:id',
+        element: <Details />,
       }
     ],
   },

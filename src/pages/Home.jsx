@@ -59,7 +59,7 @@ const Home = () => {
                     loading ? (
                         <Skeleton height={"300"} key={i}/>
                     ) : (
-                        <CardComponent key={item?.id} item={item}/>)
+                        <CardComponent key={item?.id} item={item} type={item?.media_type}/>)
                     )
 
                 )}
