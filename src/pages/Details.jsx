@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, CircularProgress, CircularProgressLabel, Container, Flex, Heading, Img, Spinner, Text } from "@chakra-ui/react"
+import { Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, Heading, Img, Spinner, Text } from "@chakra-ui/react"
 import { fetchDetails, imagePath, imagePathOriginal } from "../services/api";
-import { CalendarIcon } from "@chakra-ui/icons";
+import { CalendarIcon, CheckCircleIcon, SmallAddIcon } from "@chakra-ui/icons";
 import StarRating from "../widgets/StarRating";
 import { ratingToPercentage, resolveRatingColor } from "../utils/helper";
 
@@ -77,6 +77,69 @@ const Details = () => {
                                     {new Date(releaseDate).toLocaleDateString("en-GB")}
                                     </Text>
                                 </Flex>
+                            </Flex>
+                            <Flex alignItems={"center"} gap={"8"} flexDirection={"column"}>
+                                <Flex flexDirection={"row"} gap={"10"}>
+                                    <Flex alignItems={"center"} gap={"4"}>
+                                        <CircularProgress value={ratingToPercentage(details?.vote_average)} 
+                                                          bg={"gray.800"} 
+                                                          borderRadius={"full"} p={"0.5"} 
+                                                          size={"70px"} color={resolveRatingColor(details?.vote_average)} 
+                                                          thickness={"6px"}>
+                                            <CircularProgressLabel fontSize={"lg"}>
+                                            {ratingToPercentage(details?.vote_average)}
+                                            <Box as="span" 
+                                                 fontSize={"10px"}>%</Box>
+                                            </CircularProgressLabel>
+                                        </CircularProgress>
+                                        <Text fontWeight={"bold"}
+                                              display={{base: "none", md: "initial"}}>
+                                            TMDB score
+                                        </Text>
+                                    </Flex>
+                                    <Flex alignItems={"center"} 
+                                          gap={"4"}>
+                                        <CircularProgress value={0} 
+                                                          bg={"gray.800"} 
+                                                          borderRadius={"full"} 
+                                                          p={"0.5"} 
+                                                          size={"70px"} 
+                                                          color={resolveRatingColor(details?.vote_average)} 
+                                                          thickness={"6px"}>
+                                            <CircularProgressLabel fontSize={"lg"}>
+                                            {0}
+                                            <Box as="span" 
+                                                 fontSize={"10px"}></Box>
+                                            </CircularProgressLabel>
+                                        </CircularProgress>
+                                        <Text fontWeight={"bold"}
+                                              display={{base: "none", md: "initial"}}>
+                                            MOVIELOG score
+                                        </Text>
+                                    </Flex>
+                                </Flex>
+                                <Flex alignItems={"center"} 
+                                      gap={"5"} 
+                                      flexDirection={"column"}>
+                                    <Text fontWeight={"bold"}
+                                          display={{base: "none", md: "initial"}}>
+                                        My score
+                                    </Text>
+                                    <StarRating rating={rating} 
+                                                setRating={setRating} 
+                                                count = {10}/>
+                                </Flex>
+                                <Button leftIcon={<CheckCircleIcon/>}
+                                        colorScheme="green"
+                                        variant={"outline"}
+                                        onClick={() => console.log("click")}>
+                                        In watchlist
+                                </Button>
+                                <Button leftIcon={<SmallAddIcon/>}
+                                        variant={"outline"}
+                                        onClick={() => console.log("click")}>
+                                        Add to watchlist
+                                </Button>
                             </Flex>
                         </Box>
                     </Flex>
