@@ -12,7 +12,7 @@ export default function StarRating({ rating, setRating, count, size }) {
       value={rating}
       onChange={(value) => setRating(Number(value))}
     >
-      <HStack spacing={"2px"}>
+      <HStack spacing={"1px"}>
         {[...Array(count || 5)].map((_, index) => {
           const ratingValue = index + 1;
           return (
@@ -26,11 +26,11 @@ export default function StarRating({ rating, setRating, count, size }) {
               <Radio
                 name="rating"
                 value={ratingValue}
-                style={{ display: "none" }}
+                display = "none"
               />
               <FaStar
                 cursor={"pointer"}
-                size={size || 20}
+                size={size || 25}
                 transition="color 200ms"
               />
             </Box>

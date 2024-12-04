@@ -20,5 +20,13 @@ export const fetchTrending = async (timeWindow = "day") => {
 export const fetchDetails = async (type, id) => {
   const res = await axios.get(`${baseUrl}/${type}/${id}?api_key=${apiKey}`)
 
-  return res?.data
+  return res?.data;
+}
+
+// Credits
+
+export const fetchCredits = async (type, id) => {
+  const res = await axios.get(`${baseUrl}/${type}/${id}/credits?api_key=${apiKey}`)
+
+  return res?.data;
 }
