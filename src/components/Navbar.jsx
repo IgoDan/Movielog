@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
     return (
-        <Box py="4" mb="2">
+        <Box py="4">
             <Container maxW={"container.xl"}>
-                <Flex justifyContent={"space-between"}>
+                <Flex justifyContent={"space-between"}
+                      alignItems={"center"}>
                     <Link to="/">
                         <Box fontSize={"2xl"} fontWeight={"bold"} color={"white"} letterSpacing={"widest"} fontFamily={"mono"} >
                             MOVIELOG

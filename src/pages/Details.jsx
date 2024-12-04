@@ -5,6 +5,7 @@ import { fetchCredits, fetchDetails, imagePath, imagePathOriginal } from "../ser
 import { CalendarIcon, CheckCircleIcon, SmallAddIcon } from "@chakra-ui/icons";
 import StarRating from "../widgets/StarRating";
 import { ratingToPercentage, resolveRatingColor } from "../utils/helper";
+import { GiCharacter } from "react-icons/gi";
 
 const Details = () => {
     const router = useParams();
@@ -23,18 +24,18 @@ const Details = () => {
                 const [detailsData, creditsData] = await Promise.all([
                     fetchDetails(type, id),
                     fetchCredits(type, id),
-                ])
+                ]);
 
-                setDetails(detailsData)
-                setCast(creditsData)
+                setDetails(detailsData);
+                setCast(creditsData?.cast?.slice(0, 10));
             } catch (error) {
-                console.log(error, 'error')
+                console.log(error, 'error');
             } finally {
                 setLoading(false);
             }
         }
 
-        fetchData()
+        fetchData();
     }, [type, id]);
 
     console.log(details, 'details')
@@ -58,7 +59,7 @@ const Details = () => {
                  backgroundSize={"cover"}
                  backgroundPosition={"center"}
                  w={"100%"}
-                 h={{base: "auto", md: "auto", lg: "450px"}}
+                 h={{base: "auto", md: "auto", lg: "600px"}}
                  py={"2"}
                  zIndex={"-1"}
                  display={"flex"}
@@ -167,8 +168,8 @@ const Details = () => {
                                   fontSize={"md"}
                                   fontStyle={"italic"}
                                   my={"4"}>
-                                    {details?.overview?.length > 200 
-                                    ? `${details.overview.slice(0, 200)}...` 
+                                    {details?.overview?.length > 250 
+                                    ? `${details.overview.slice(0, 250)}...` 
                                     : details?.overview}
                             </Text>
 
@@ -197,7 +198,7 @@ const Details = () => {
                             </Heading>
                             <Flex mt={"6"} 
                                   gap={"2"}
-                                  wrap={"wrap"} // Umożliwia zawijanie elementów do nowych wierszy
+                                  wrap={"wrap"}
                                   justifyContent={"flex-start"}>
                                 {details?.genres?.map((genre) => (
                                     <Badge key={genre?.id} p={"1"}>{genre?.name}</Badge>
@@ -207,6 +208,28 @@ const Details = () => {
                     </Flex>
                 </Container>
             </Box>
+            <Container maxWidth={"container.xl"} pb="10">
+                <Heading as="h2"
+                         fontSize={"md"}
+                         textTransform={"uppercase"}
+                         mt={"10"}>
+                    Cast
+                </Heading>
+                <Flex mt={"5"}
+                      mb={"10"}
+                      overflowX={"scroll"}
+                      gap={"5"}>
+                    {cast?.length === 0 && <Text>No cast found</Text>}
+                    {cast && cast?.map((item) => (
+                     <Box key={item?.id} minW={"150px"}>
+                        <Img src={`${imagePath}/${item?.profile_path}`} alt={"no-image"}></Img>
+                        <Text align={"center"} my={"2"} fontSize={"sm"} fontWeight={"bold"}>{item?.original_name}</Text>
+                        <Text align={"center"} my={"2"} fontSize={"sm"}>AS</Text>
+                        <Text align={"center"} my={"2"} fontSize={"sm"} fontWeight={"bold"}>{item?.character}</Text>
+                     </Box>   
+                    ))}
+                </Flex>
+            </Container>
         </Box>
     );
 };
