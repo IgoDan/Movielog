@@ -30,3 +30,11 @@ export const fetchCredits = async (type, id) => {
 
   return res?.data;
 }
+
+// Movies
+
+export const fetchMovies = async (page) => {
+  const res = await axios.get(`${baseUrl}/discover/movie?api_key=${apiKey}&page=${page}`)
+
+  return res?.data;
+}

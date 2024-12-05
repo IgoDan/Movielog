@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, Heading, Img, Spinner, Text, Input, Divider, Badge } from "@chakra-ui/react"
 import { fetchCredits, fetchDetails, imagePath, imagePathOriginal } from "../services/api";
-import { CalendarIcon, CheckCircleIcon, SmallAddIcon } from "@chakra-ui/icons";
+import { CalendarIcon, CheckCircleIcon, SmallAddIcon, TimeIcon } from "@chakra-ui/icons";
 import StarRating from "../widgets/StarRating";
 import { ratingToPercentage, resolveRatingColor } from "../utils/helper";
-import { GiCharacter } from "react-icons/gi";
 
 const Details = () => {
     const router = useParams();
@@ -89,6 +88,14 @@ const Details = () => {
                                     {new Date(releaseDate).toLocaleDateString("en-GB")}
                                     </Text>
                                 </Flex>
+
+                                {type === "movie" && (
+                                <Flex alignItems={"center"}>
+                                    <TimeIcon mr="2" color={"gray.400"} />
+                                    <Text fontSize={"sm"}>
+                                    {details?.runtime} min
+                                    </Text>
+                                </Flex>)}
                             </Flex>
                             <Flex alignItems={"center"} gap={"8"} flexDirection={"column"}>
                                 <Flex flexDirection={"row"} gap={"10"}>
@@ -217,11 +224,11 @@ const Details = () => {
                 </Heading>
                 <Flex mt={"5"}
                       mb={"10"}
-                      overflowX={"scroll"}
+                      overflowX={"auto"}
                       gap={"5"}>
                     {cast?.length === 0 && <Text>No cast found</Text>}
                     {cast && cast?.map((item) => (
-                     <Box key={item?.id} minW={"150px"}>
+                     <Box key={item?.id} minW={"230px"}>
                         <Img src={`${imagePath}/${item?.profile_path}`} alt={"no-image"}></Img>
                         <Text align={"center"} my={"2"} fontSize={"sm"} fontWeight={"bold"}>{item?.original_name}</Text>
                         <Text align={"center"} my={"2"} fontSize={"sm"}>AS</Text>

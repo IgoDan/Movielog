@@ -53,13 +53,19 @@ const Home = () => {
                 </Flex>
             </Flex> 
 
-            <Grid templateColumns={{base: "1fr", sm: "repeat(2, 1fr)", md: "repeat(4, 1fr)", lg: "repeat(5, 1fr)"}} 
+            <Grid templateColumns={{base: "1fr", 
+                                    sm: "repeat(2, 1fr)", 
+                                    md: "repeat(4, 1fr)", 
+                                    lg: "repeat(5, 1fr)"}} 
                   gap={"4"}>
                 {data && data?.map((item, i) => (
                     loading ? (
-                        <Skeleton height={"300"} key={i}/>
+                        <Skeleton height={"300"} 
+                                  key={i}/>
                     ) : (
-                        <CardComponent key={item?.id} item={item} type={item?.media_type}/>)
+                        <CardComponent key={item?.id} 
+                                       item={item} 
+                                       type={item?.media_type}/>)
                     )
 
                 )}
