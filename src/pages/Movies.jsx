@@ -1,4 +1,4 @@
-import { Container, Grid, Heading, Skeleton } from "@chakra-ui/react"
+import { Container, Grid, Heading, Skeleton, Flex, Select } from "@chakra-ui/react"
 import { act, useEffect, useState } from "react";
 import { fetchMovies } from "../services/api";
 import CardComponent from "../components/CardComponent";
@@ -9,12 +9,13 @@ const Movies = () => {
     const [movies, setMovies] = useState([]);
     const [activePage, setActivePage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [sortBy, setSortBy] = useState("vote_average.desc&vote_count.gte=1000");
 
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setIsLoading(true);
-        fetchMovies(activePage).then((res) => {
+        fetchMovies(activePage, sortBy).then((res) => {
             console.log(res, 'res')
             setMovies(res?.results);
             setActivePage(res?.page);
@@ -22,13 +23,22 @@ const Movies = () => {
         })
         .catch((err) => console.log(err, 'err'))
         .finally(( () => setIsLoading(false)))
-    }, [activePage])
+    }, [activePage, sortBy])
 
     return (
         <Container maxW={"container.xl"}>
-            <Heading as="h2" fontSize={"md"} textTransform={"uppercase"}>
-                Search Movies
-            </Heading>
+            <Flex alignItems={"baseline"} gap={"4"} my={"10"}>
+                <Heading as="h2" fontSize={"md"} textTransform={"uppercase"}>
+                    Search Movies
+                </Heading>
+                <Select w={"130px"} onChange={(event) => {
+                    setActivePage(1);
+                    setSortBy(event.target.value);
+                }}>
+                    <option value="vote_average.desc&vote_count.gte=500">Top rated</option>
+                    <option value="popularity.desc">Popular</option>
+                </Select>
+            </Flex>
             <Grid templateColumns={{base: "1fr", 
                                     sm: "repeat(2, 1fr)", 
                                     md: "repeat(4, 1fr)", 

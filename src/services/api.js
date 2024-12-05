@@ -33,8 +33,8 @@ export const fetchCredits = async (type, id) => {
 
 // Movies
 
-export const fetchMovies = async (page) => {
-  const res = await axios.get(`${baseUrl}/discover/movie?api_key=${apiKey}&page=${page}`)
+export const fetchMovies = async (page, sortBy) => {
+  const res = await axios.get(`${baseUrl}/discover/movie?api_key=${apiKey}&page=${page}&sort_by=${sortBy}`)
 
   return res?.data;
 }
