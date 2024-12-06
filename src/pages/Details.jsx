@@ -228,7 +228,7 @@ const Details = () => {
                       gap={"5"}>
                     {cast?.length === 0 && <Text>No cast found</Text>}
                     {cast && cast?.map((item) => (
-                     <Box key={item?.id} minW={"230px"}>
+                     <Box key={item?.id} minW={"230px"} maxW={"230px"}>
                         <Img src={`${imagePath}/${item?.profile_path}`} alt={"no-image"}></Img>
                         <Text align={"center"} my={"2"} fontSize={"sm"} fontWeight={"bold"}>{item?.original_name}</Text>
                         <Text align={"center"} my={"2"} fontSize={"sm"}>AS</Text>

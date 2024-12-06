@@ -6,7 +6,7 @@ import { StarIcon } from '@chakra-ui/icons';
 
 const CardComponent = ({item, type}) => {
     return (
-        <Link to={`${type}/${item?.id}`}>         
+        <Link to={`/${type}/${item?.id}`}>         
             <Box position={"relative"} 
                 transform={"scale(1)"} 
                 _hover={{
