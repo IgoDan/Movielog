@@ -1,4 +1,5 @@
 import axios from "axios"
+import { number } from "prop-types";
 
 export const imagePath = "https://image.tmdb.org/t/p/w500";
 export const imagePathOriginal = "https://image.tmdb.org/t/p/original";
@@ -33,16 +34,36 @@ export const fetchCredits = async (type, id) => {
 
 // Movies
 
-export const fetchMovies = async (page, sortBy) => {
-  const res = await axios.get(`${baseUrl}/discover/movie?api_key=${apiKey}&page=${page}&sort_by=${sortBy}`)
+export const fetchMovies = async (page, sortBy, releaseYear) => {
+  let res;
+  if (releaseYear === 0){
+    res = await axios.get(`${baseUrl}/discover/movie?api_key=${apiKey}&page=${page}&sort_by=${sortBy}`)
+  }
+  else {
+    res = await axios.get(`${baseUrl}/discover/movie?api_key=${apiKey}&page=${page}&sort_by=${sortBy}&primary_release_year=${releaseYear}`) 
+  }
 
   return res?.data;
 }
 
 // Shows
 
-export const fetchShows = async (page, sortBy) => {
-  const res = await axios.get(`${baseUrl}/discover/tv?api_key=${apiKey}&page=${page}&sort_by=${sortBy}`)
+export const fetchShows = async (page, sortBy, releaseYear) => {
+  let res;
+  if (releaseYear === 0){
+    res = await axios.get(`${baseUrl}/discover/tv?api_key=${apiKey}&page=${page}&sort_by=${sortBy}`)
+  }
+  else {
+    res = await axios.get(`${baseUrl}/discover/tv?api_key=${apiKey}&page=${page}&sort_by=${sortBy}&first_air_date_year=${releaseYear}`) 
+  }
+
+  return res?.data;
+}
+
+// Search Movies
+
+export const searchShows = async (query) => {
+  const res = await axios.get(`${baseUrl}/search/movie?api_key=${apiKey}&query=${query}`)
 
   return res?.data;
 }

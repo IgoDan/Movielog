@@ -11,3 +11,14 @@ export const resolveRatingColor = (rating) => {
         return "red.400"
     }
 }
+
+export const generateYearOptions = (startYear = 1920) => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+
+    for (let year = currentYear; year >= startYear; year--) {
+        years.push(year);
+    }
+
+    return years;
+};

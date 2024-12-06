@@ -3,19 +3,22 @@ import { useEffect, useState } from "react";
 import { fetchShows } from "../services/api";
 import CardComponent from "../components/CardComponent";
 import PagingComponent from "../components/PagingComponent";
+import { generateYearOptions } from "../utils/helper";
 
 const Shows = () => {
 
     const [shows, setShows] = useState([]);
     const [activePage, setActivePage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [sortBy, setSortBy] = useState("vote_average.desc&vote_count.gte=1000");
+    const [sortBy, setSortBy] = useState("vote_average.desc&vote_count.gte=500");
+
+    const [releaseYear, setReleaseYear] = useState(0);
 
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setIsLoading(true);
-        fetchShows(activePage, sortBy).then((res) => {
+        fetchShows(activePage, sortBy, releaseYear).then((res) => {
             console.log(res, 'res')
             setShows(res?.results);
             setActivePage(res?.page);
@@ -23,7 +26,7 @@ const Shows = () => {
         })
         .catch((err) => console.log(err, 'err'))
         .finally(( () => setIsLoading(false)))
-    }, [activePage, sortBy])
+    }, [activePage, sortBy, releaseYear])
 
     return (
         <Container maxW={"container.xl"}>
@@ -37,6 +40,21 @@ const Shows = () => {
                 }}>
                     <option value="vote_average.desc&vote_count.gte=500">Top rated</option>
                     <option value="popularity.desc">Popular</option>
+                </Select>
+                <Select
+                    w={"130px"}
+                    onChange={(event) => {
+                        setActivePage(1);
+                        setReleaseYear(Number(event.target.value));
+                    }}>
+                    <option value={0}>
+                            All years
+                    </option>
+                    {generateYearOptions().map((year) => (
+                        <option key={year} value={year}>
+                            {year}
+                        </option>
+                    ))}
                 </Select>
             </Flex>
             <Grid templateColumns={{base: "1fr", 
