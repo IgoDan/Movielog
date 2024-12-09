@@ -62,8 +62,28 @@ export const fetchShows = async (page, sortBy, releaseYear) => {
 
 // Search Movies
 
-export const searchShows = async (query) => {
-  const res = await axios.get(`${baseUrl}/search/movie?api_key=${apiKey}&query=${query}`)
+export const searchMovies = async (query, page, releaseYear) => {
+  let res;
+  if (releaseYear === 0){
+    res = await axios.get(`${baseUrl}/search/movie?api_key=${apiKey}&query=${query}&page=${page}`)
+  }
+  else {
+    res = await axios.get(`${baseUrl}/search/movie?api_key=${apiKey}&query=${query}&page=${page}&primary_release_year=${releaseYear}`) 
+  }
+
+  return res?.data;
+}
+
+// Search Movies
+
+export const searchShows = async (query, page, releaseYear) => {
+  let res;
+  if (releaseYear === 0){
+    res = await axios.get(`${baseUrl}/search/tv?api_key=${apiKey}&query=${query}&page=${page}`)
+  }
+  else {
+    res = await axios.get(`${baseUrl}/search/tv?api_key=${apiKey}&query=${query}&page=${page}&first_air_date_year=${releaseYear}`) 
+  }
 
   return res?.data;
 }
