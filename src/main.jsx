@@ -10,6 +10,7 @@ import Movies from './pages/Movies.jsx'
 import Shows from './pages/Shows.jsx'
 import Watchlist from './pages/Watchlist.jsx'
 import Details from './pages/Details.jsx'
+import { AuthProvider } from './context/authProvider.jsx'
 
 const router = createBrowserRouter([
   {
@@ -45,7 +46,9 @@ createRoot(document.getElementById('root')).render(
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     {localStorage.setItem('chakra-ui-color-mode', 'dark')}
     <ChakraProvider theme={theme}>
+      <AuthProvider>
       <RouterProvider router={router} />
+      </AuthProvider>
     </ChakraProvider>
   </StrictMode>,
 )
