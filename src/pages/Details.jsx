@@ -1,21 +1,27 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, Heading, Img, Spinner, Text, Input, Divider, Badge } from "@chakra-ui/react"
+import { Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, Heading, Img, Spinner, Text, Input, Divider, Badge, useToast } from "@chakra-ui/react"
 import { fetchCredits, fetchDetails, imagePath, imagePathOriginal } from "../services/api";
-import { CalendarIcon, CheckCircleIcon, SmallAddIcon, TimeIcon } from "@chakra-ui/icons";
+import { CalendarIcon, SmallAddIcon, TimeIcon } from "@chakra-ui/icons";
 import StarRating from "../widgets/StarRating";
 import { ratingToPercentage, resolveRatingColor } from "../utils/helper";
+import { useAuth } from "../context/useAuth";
+import { useFirestore } from "../services/firestore";
 
 const Details = () => {
     const router = useParams();
     const { type, id } = router;
 
-    const [loading, setLoading] = useState(true);
+    const toast = useToast();
 
+    const { user } = useAuth();
+    const { addToWatchlist } = useFirestore();
+
+    const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState({});
     const [cast, setCast] = useState({});
-
     const [rating, setRating] = useState(0);
+    const [review, setReview] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,6 +45,33 @@ const Details = () => {
 
     console.log(details, 'details')
     console.log(cast, 'cast')
+
+    const handleSaveToWatchlist = async () => {
+        if (!user) {
+            toast({
+                title: "Login to add to watchlist",
+                status: "error",
+                isClosable: true
+            });
+
+            return;
+        }
+
+        const data = {
+            id: details?.id,
+            title: details?.title || details?.name,
+            type: type,
+            poster_path: details?.poster_path,
+            release_date: details?.release_date || details?.first_air_date,
+            overwiew: details?.overview,
+            vote_average: details?.vote_average,
+            user_rating: rating,
+            user_review: review
+        }
+
+        const dataId = details?.id?.toString();
+        await addToWatchlist(user?.uid, dataId, data);
+    }
 
     if (loading){
         return(
@@ -153,10 +186,13 @@ const Details = () => {
                                         onClick={() => console.log("click")}>
                                         In watchlist
                                 </Button> */}
-                                <Input placeholder='Review' />
+                                <Input type="text"
+                                       placeholder="Review"
+                                       value={review}
+                                       onChange={(event) => {setReview(event.target.value)}} />
                                 <Button leftIcon={<SmallAddIcon/>}
                                         variant={"outline"}
-                                        onClick={() => console.log("click")}>
+                                        onClick={handleSaveToWatchlist}>
                                         Add to watchlist
                                 </Button>
                             </Flex>
