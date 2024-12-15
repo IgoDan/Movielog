@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, Heading, Img, Spinner, Text, Input, Divider, Badge, useToast } from "@chakra-ui/react"
 import { fetchCredits, fetchDetails, imagePath, imagePathOriginal } from "../services/api";
-import { CalendarIcon, SmallAddIcon, TimeIcon } from "@chakra-ui/icons";
+import { CalendarIcon, SmallAddIcon, TimeIcon, CheckCircleIcon, RepeatClockIcon } from "@chakra-ui/icons";
 import StarRating from "../widgets/StarRating";
 import { ratingToPercentage, resolveRatingColor } from "../utils/helper";
 import { useAuth } from "../context/useAuth";
 import { useFirestore } from "../services/firestore";
+
 
 const Details = () => {
     const router = useParams();
@@ -15,13 +16,15 @@ const Details = () => {
     const toast = useToast();
 
     const { user } = useAuth();
-    const { addToWatchlist } = useFirestore();
+    const { addToWatchlist, checkIfInWatchlist } = useFirestore();
 
     const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState({});
     const [cast, setCast] = useState({});
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState('');
+    const [isInWatchlist, setIsInWatchlist] = useState(false);
+    const [isUpdated, setIsUpdated] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -46,6 +49,22 @@ const Details = () => {
     console.log(details, 'details')
     console.log(cast, 'cast')
 
+    useEffect (() => {
+        if (!user) {
+            setIsInWatchlist(false);
+        } else {
+            const dataId = createId(id, type);
+            checkIfInWatchlist(user?.uid, dataId).then((data) => {
+                setIsInWatchlist(data);
+            })
+        }
+    }, [id, user, checkIfInWatchlist])
+
+    useEffect(() => {
+        const hasChanges = rating !== 0 || review.trim() !== '';
+        setIsUpdated(hasChanges);
+    }, [rating, review]);
+
     const handleSaveToWatchlist = async () => {
         if (!user) {
             toast({
@@ -69,9 +88,19 @@ const Details = () => {
             user_review: review
         }
 
-        const dataId = details?.id?.toString();
+        const dataId = createId(details?.id, type);
         await addToWatchlist(user?.uid, dataId, data);
+
+        const watchlistState = await checkIfInWatchlist(user?.uid, dataId);
+        setIsInWatchlist(watchlistState);
     }
+
+    const createId = (id, type) => {
+        return (type === "movie" ? "m" : "t") + id.toString();
+    }
+
+    const title = details?.title || details?.name;
+    const releaseDate = type === "movie" ? details?.release_date : details?.first_air_date;
 
     if (loading){
         return(
@@ -80,9 +109,6 @@ const Details = () => {
             </Flex>
         )
     }
-
-    const title = details?.title || details?.name;
-    const releaseDate = type === "movie" ? details?.release_date : details?.first_air_date;
 
     return (
         <Box>
@@ -179,22 +205,43 @@ const Details = () => {
                                     <StarRating rating={rating} 
                                                 setRating={setRating} 
                                                 count = {10}/>
+                                    
                                 </Flex>
-                                {/* <Button leftIcon={<CheckCircleIcon/>}
-                                        colorScheme="green"
-                                        variant={"outline"}
-                                        onClick={() => console.log("click")}>
-                                        In watchlist
-                                </Button> */}
                                 <Input type="text"
                                        placeholder="Review"
                                        value={review}
                                        onChange={(event) => {setReview(event.target.value)}} />
-                                <Button leftIcon={<SmallAddIcon/>}
+                                {isInWatchlist && !isUpdated && (
+                                    <Button leftIcon={<CheckCircleIcon/>}
+                                            colorScheme="green"
+                                            onClick={() => console.log("click")}>
+                                            In watchlist
+                                    </Button>
+                                )}
+                                
+                                {!isInWatchlist && (
+                                    <Button leftIcon={<SmallAddIcon/>}
                                         variant={"outline"}
                                         onClick={handleSaveToWatchlist}>
                                         Add to watchlist
-                                </Button>
+                                    </Button>
+                                )}
+                                {isInWatchlist && isUpdated && (
+                                    <Button
+                                        leftIcon={<RepeatClockIcon />}
+                                        colorScheme="blue"
+                                        variant={"outline"}
+                                        onClick={() => {
+                                            toast({
+                                                title: "Changes saved",
+                                                status: "success",
+                                                isClosable: true,
+                                            });
+                                            setIsUpdated(false);
+                                        }}>
+                                        Update changes
+                                    </Button>
+                                )}
                             </Flex>
                         </Box>
                         <Box flexDirection={"column"}

@@ -1,5 +1,5 @@
 import { db } from "../services/firebase";
-import { collection, addDoc, doc, setDoc } from 'firebase/firestore'
+import { collection, addDoc, doc, setDoc, getDoc } from 'firebase/firestore'
 import { useToast } from '@chakra-ui/react';
 
 export const useFirestore = () => {
@@ -11,6 +11,17 @@ export const useFirestore = () => {
     // };
 
     const addToWatchlist = async (userId, dataId, data) => {
+        if (await checkIfInWatchlist(userId, dataId)){
+            toast({
+                title: "Info",
+                description: "Already in watchlist",
+                status: "info",
+                duration: 9000,
+                isClosable: true
+            });
+
+            return false;
+        }
         try{
             await setDoc(doc(db, "users", userId, "watchlist", dataId), data);
             toast({
@@ -30,11 +41,20 @@ export const useFirestore = () => {
         }
     };
 
+    const checkIfInWatchlist = async (userId, dataId) => {
+        const docRef = doc(db, "users", userId?.toString(), "watchlist", dataId.toString());
+    
+        const docSnap = await getDoc(docRef);
+    
+        if (docSnap.exists()){
+            return true;
+        } else {
+            false;
+        }
+    }
+
     return {
         addToWatchlist,
+        checkIfInWatchlist,
     };
 };
-
-const checkIfInWatchlist = async (userId, dataId) => {
-
-}
