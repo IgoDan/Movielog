@@ -16,7 +16,7 @@ const Details = () => {
     const toast = useToast();
 
     const { user } = useAuth();
-    const { addToWatchlist, checkIfInWatchlist } = useFirestore();
+    const { addToWatchlist, checkIfInWatchlist, removeFromWatchlist, updateWatchlist, fetchWatchlistElement } = useFirestore();
 
     const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState({});
@@ -25,6 +25,9 @@ const Details = () => {
     const [review, setReview] = useState('');
     const [isInWatchlist, setIsInWatchlist] = useState(false);
     const [isUpdated, setIsUpdated] = useState(false);
+
+    const [initialRating, setInitialRating] = useState(0);
+    const [initialReview, setInitialReview] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -36,6 +39,9 @@ const Details = () => {
 
                 setDetails(detailsData);
                 setCast(creditsData?.cast?.slice(0, 10));
+
+                console.log(details, 'details');
+                console.log(cast, 'cast');
             } catch (error) {
                 console.log(error, 'error');
             } finally {
@@ -46,24 +52,31 @@ const Details = () => {
         fetchData();
     }, [type, id]);
 
-    console.log(details, 'details')
-    console.log(cast, 'cast')
-
     useEffect (() => {
         if (!user) {
             setIsInWatchlist(false);
+            return;
         } else {
             const dataId = createId(id, type);
             checkIfInWatchlist(user?.uid, dataId).then((data) => {
                 setIsInWatchlist(data);
-            })
+            });
+            fetchWatchlistElement(user?.uid, dataId).then((watchlistElement) => {
+                if (watchlistElement) {
+                    setInitialRating(watchlistElement.user_rating);
+                    setInitialReview(watchlistElement.user_review);
+                    setRating(watchlistElement.user_rating);
+                    setReview(watchlistElement.user_review);
+                }
+            });
         }
-    }, [id, user, checkIfInWatchlist])
+    }, [id, user])
 
     useEffect(() => {
-        const hasChanges = rating !== 0 || review.trim() !== '';
-        setIsUpdated(hasChanges);
-    }, [rating, review]);
+        if (rating !== initialRating || review !== initialReview){
+            setIsUpdated(true);
+        }
+    }, [review, rating]);
 
     const handleSaveToWatchlist = async () => {
         if (!user) {
@@ -94,6 +107,34 @@ const Details = () => {
         const watchlistState = await checkIfInWatchlist(user?.uid, dataId);
         setIsInWatchlist(watchlistState);
     }
+
+    const handleRemoveFromWatchlist = async () => {
+        const dataId = createId(details?.id, type);
+        await removeFromWatchlist(user?.uid, dataId);
+
+        const watchlistState = await checkIfInWatchlist(user?.uid, dataId);
+        setIsInWatchlist(watchlistState);
+
+        setInitialRating(0);
+        setInitialReview("");
+        setRating(0);
+        setReview("");
+    }
+
+    const handleUpdateWatchlist = async () => {
+        const dataId = createId(details?.id, type);
+    
+        const updatedData = {
+            user_rating: rating,
+            user_review: review,
+        };
+    
+        await updateWatchlist(user?.uid, dataId, updatedData);
+
+        setInitialRating(rating);
+        setInitialReview(review);
+        setIsUpdated(false);
+    };
 
     const createId = (id, type) => {
         return (type === "movie" ? "m" : "t") + id.toString();
@@ -214,7 +255,7 @@ const Details = () => {
                                 {isInWatchlist && !isUpdated && (
                                     <Button leftIcon={<CheckCircleIcon/>}
                                             colorScheme="green"
-                                            onClick={() => console.log("click")}>
+                                            onClick={handleRemoveFromWatchlist}>
                                             In watchlist
                                     </Button>
                                 )}
@@ -231,14 +272,7 @@ const Details = () => {
                                         leftIcon={<RepeatClockIcon />}
                                         colorScheme="blue"
                                         variant={"outline"}
-                                        onClick={() => {
-                                            toast({
-                                                title: "Changes saved",
-                                                status: "success",
-                                                isClosable: true,
-                                            });
-                                            setIsUpdated(false);
-                                        }}>
+                                        onClick={handleUpdateWatchlist}>
                                         Update changes
                                     </Button>
                                 )}
