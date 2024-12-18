@@ -22,3 +22,7 @@ export const generateYearOptions = (startYear = 1920) => {
 
     return years;
 };
+
+export const createId = (id, type) => {
+    return (type === "movie" ? "m" : "t") + id.toString();
+}

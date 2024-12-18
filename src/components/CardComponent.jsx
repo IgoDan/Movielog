@@ -31,18 +31,27 @@ const CardComponent = ({item, type}) => {
                      opacity={"0"}
                      transition={"opacity 0.3s ease-in-out"}
                      transform={"scale(1.005)"}>
-                    <Text textAlign={"center"}>
+                    <Text textAlign={"center"} fontSize={"md"} fontWeight={"bold"} noOfLines={1}>
                         {item?.title || item?.name}
                     </Text>
-                    <Text textAlign={"center"} fontSize={"small"} color={"blue.100"}>
-                        {new Date(item?.release_date || item?.first_air_date).getFullYear() || "N/A"}
-                    </Text>
+                    <Flex alignItems="center" gap="1" justifyContent={"center"}>
+                            <Text fontSize="sm" color="gray.400" textTransform="uppercase">
+                                {item?.type === "movie" ? "Movie" : "TV Series"}
+                            </Text>
+                            <Text fontSize="sm" color="gray.400">
+                                -
+                            </Text>
+                            <Text fontSize="sm" color="gray.400">
+                                {new Date(item?.release_date || item?.first_air_date).getFullYear() || "N/A"}
+                            </Text>
+                        </Flex>
                     <Flex alignItems={"center"}
                           justifyContent={"center"}
                           gap={2}
                           mt={3}>
-                        <StarIcon fontSize={"small"}/>
+                        <StarIcon fontSize={"medium"}/>
                         <Text>{item?.vote_average.toFixed(1)}</Text>
+                        <Text fontSize="xs"fontWeight={"bold"}>TMDB</Text>
                     </Flex>
                 </Box>
             </Box>

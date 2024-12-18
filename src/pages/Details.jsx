@@ -4,7 +4,7 @@ import { Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, 
 import { fetchCredits, fetchDetails, imagePath, imagePathOriginal } from "../services/api";
 import { CalendarIcon, SmallAddIcon, TimeIcon, CheckCircleIcon, RepeatClockIcon } from "@chakra-ui/icons";
 import StarRating from "../widgets/StarRating";
-import { ratingToPercentage, resolveRatingColor } from "../utils/helper";
+import { ratingToPercentage, resolveRatingColor, createId } from "../utils/helper";
 import { useAuth } from "../context/useAuth";
 import { useFirestore } from "../services/firestore";
 
@@ -95,7 +95,6 @@ const Details = () => {
             type: type,
             poster_path: details?.poster_path,
             release_date: details?.release_date || details?.first_air_date,
-            overwiew: details?.overview,
             vote_average: details?.vote_average,
             user_rating: rating,
             user_review: review
@@ -136,16 +135,12 @@ const Details = () => {
         setIsUpdated(false);
     };
 
-    const createId = (id, type) => {
-        return (type === "movie" ? "m" : "t") + id.toString();
-    }
-
     const title = details?.title || details?.name;
     const releaseDate = type === "movie" ? details?.release_date : details?.first_air_date;
 
     if (loading){
         return(
-            <Flex justify={"center"}>
+            <Flex justify={"center"} mt={"10"}>
                 <Spinner size={"xl"} color={"white"}/>
             </Flex>
         )

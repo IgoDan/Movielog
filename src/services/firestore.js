@@ -116,7 +116,6 @@ export const useFirestore = () => {
     };
 
     const getWatchlist = useCallback(async (userId) => {
-        console.log("AAAAAAAAAAAAAAAA");
         const querySnapshot = await getDocs(
           collection(db, "users", userId, "watchlist")
         );
