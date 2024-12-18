@@ -26,7 +26,7 @@ export const AuthProvider = ({children}) => {
             else {
                 setUser(null);
             }
-            setIsLoading("false");
+            setIsLoading(false);
         })
     }, [])
 

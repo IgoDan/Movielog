@@ -22,7 +22,6 @@ const Movies = () => {
         fetchMovies(activePage, sortBy, releaseYear).then((res) => {
             console.log(res, 'res')
             setMovies(res?.results);
-            setActivePage(res?.page);
             setTotalPages(res?.total_pages);
         })
         .catch((err) => console.log(err, 'err'))
@@ -34,7 +33,6 @@ const Movies = () => {
         searchMovies(searchValue, activePage, releaseYear).then((res) => {
             console.log(res, 'res')
             setMovies(res?.results);
-            setActivePage(res?.page);
             setTotalPages(res?.total_pages);
         }).catch((err) => {
             console.log(err, 'err')
@@ -49,16 +47,17 @@ const Movies = () => {
         else{
             RefreshWithSearch();
         }
+        setActivePage(1);
     }
 
     useEffect(() => {
-        setIsLoading(true);
         if (searchValue === ""){
             RefreshNonSearch()
         }
         else{
             RefreshWithSearch()
         }
+        setActivePage(1);
     }, [activePage, sortBy, releaseYear])
 
     return (

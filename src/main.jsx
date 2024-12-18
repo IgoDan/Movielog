@@ -36,12 +36,12 @@ const router = createBrowserRouter([
           <Protected>
             <Watchlist />
           </Protected>
-        )
+        ),
       },
       {
         path: '/:type/:id',
         element: <Details />,
-      }
+      },
     ],
   },
 ]);
