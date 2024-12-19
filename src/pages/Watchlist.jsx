@@ -52,8 +52,6 @@ const Watchlist = () => {
                     <Grid templateColumns={{
                         base: "1fr",
                         sm: "repeat(1, 1fr)",
-                        md: "repeat(1, 1fr)",
-                        lg: "repeat(1, 5fr)",
                         xl: "repeat(2, 5fr)"
                     }}
                         gap={"30px"}>

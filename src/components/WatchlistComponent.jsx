@@ -28,7 +28,7 @@ const WatchlistComponent = ({ item, type, setWatchlist }) => {
     const [review, setReview] = useState('');
 
     const handleRemoveClick = (event) => {
-        event.preventDefault(); // Prevent the default behavior (link redirection)
+        event.preventDefault();
         const itemId = createId(item?.id, item?.type);
         removeFromWatchlist(user?.uid, itemId).then(() => {
             setWatchlist((prev) => prev.filter((el) => el.id !== item.id));
@@ -38,12 +38,11 @@ const WatchlistComponent = ({ item, type, setWatchlist }) => {
     useEffect(() => {
         console.log("item", item)
         if (!user) {
-            setIsInWatchlist(false);
             return;
         } else {
             const dataId = createId(item?.id, type);
             checkIfInWatchlist(user?.uid, dataId).then((data) => {
-                setIsInWatchlist(data);
+                console.log("watchlist", data)
             });
             fetchWatchlistElement(user?.uid, dataId).then((watchlistElement) => {
                 if (watchlistElement) {
@@ -56,9 +55,9 @@ const WatchlistComponent = ({ item, type, setWatchlist }) => {
 
     return (
         <Link to={`/${type}/${item.id}`}>
-            <Flex gap="4" bg="gray.900" padding="25px" borderRadius="8px" w="600px">
+            <Flex gap="4" bg="gray.900" padding="25px" borderRadius="8px">
 
-                <Box position="relative">
+                <Box position="relative" display={{base: "none", md: "initial"}}>
                     <Image
                         src={`${imagePath}/${item.poster_path}`}
                         alt={item.title}
@@ -81,7 +80,7 @@ const WatchlistComponent = ({ item, type, setWatchlist }) => {
                     </Tooltip>
                 </Box>
 
-                <Flex flexDirection="column" gap="4" w="420px" ml={"10px"} justifyContent={"center"}>
+                <Flex flexDirection="column" gap="4" ml={"8px"} justifyContent={"center"} w={"340px"}>
 
                     <Flex flexDirection={"column"} justifyContent="space-between" alignItems="center" gap="2">
                         <Heading fontSize={{ base: 'xl', md: 'xl' }} noOfLines={1}>
@@ -132,7 +131,8 @@ const WatchlistComponent = ({ item, type, setWatchlist }) => {
                         <Input
                             type="text"
                             placeholder="No review found"
-                            value={review}/>
+                            value={review}
+                            readOnly={true}/>
                     </Flex>
                 </Flex>
             </Flex>
