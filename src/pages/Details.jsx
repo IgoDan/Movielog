@@ -4,7 +4,7 @@ import { Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, 
 import { fetchCredits, fetchDetails, imagePath, imagePathOriginal } from "../services/api";
 import { CalendarIcon, SmallAddIcon, TimeIcon, CheckCircleIcon, RepeatClockIcon } from "@chakra-ui/icons";
 import StarRating from "../widgets/StarRating";
-import { ratingToPercentage, resolveRatingColor, createId } from "../utils/helper";
+import { ratingToPercentage, averageRatingFormat, resolveRatingColor, createId } from "../utils/helper";
 import { useAuth } from "../context/useAuth";
 import { useFirestore } from "../services/firestore";
 
@@ -16,7 +16,7 @@ const Details = () => {
     const toast = useToast();
 
     const { user } = useAuth();
-    const { addToWatchlist, checkIfInWatchlist, removeFromWatchlist, updateWatchlist, fetchWatchlistElement } = useFirestore();
+    const { addToWatchlist, checkIfInWatchlist, removeFromWatchlist, updateWatchlist, fetchWatchlistElement, fetchAverageRating } = useFirestore();
 
     const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState({});
@@ -28,6 +28,8 @@ const Details = () => {
 
     const [initialRating, setInitialRating] = useState(0);
     const [initialReview, setInitialReview] = useState('');
+
+    const [averageRating, setAverageRating] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -69,6 +71,12 @@ const Details = () => {
                     setReview(watchlistElement.user_review);
                 }
             });
+
+            fetchAverageRating(dataId).then((averageRatingData) => {
+                if (averageRatingData) {
+                    setAverageRating(averageRatingData.averageRating);
+                }
+            });
         }
     }, [id, user])
 
@@ -105,6 +113,7 @@ const Details = () => {
 
         const watchlistState = await checkIfInWatchlist(user?.uid, dataId);
         setIsInWatchlist(watchlistState);
+        setIsUpdated(false);
     }
 
     const handleRemoveFromWatchlist = async () => {
@@ -213,15 +222,15 @@ const Details = () => {
                                     </Flex>
                                     <Flex alignItems={"center"} 
                                           gap={"4"}>
-                                        <CircularProgress value={0} 
+                                        <CircularProgress value={averageRatingFormat(averageRating)} 
                                                           bg={"gray.800"} 
                                                           borderRadius={"full"} 
                                                           p={"0.5"} 
                                                           size={"70px"} 
-                                                          color={resolveRatingColor(details?.vote_average)} 
+                                                          color={resolveRatingColor(averageRating)} 
                                                           thickness={"6px"}>
                                             <CircularProgressLabel fontSize={"lg"}>
-                                            {0}
+                                            {averageRatingFormat(averageRating)/10}
                                             <Box as="span" 
                                                  fontSize={"10px"}></Box>
                                             </CircularProgressLabel>
@@ -253,8 +262,7 @@ const Details = () => {
                                             onClick={handleRemoveFromWatchlist}>
                                             In watchlist
                                     </Button>
-                                )}
-                                
+                                )}                                
                                 {!isInWatchlist && (
                                     <Button leftIcon={<SmallAddIcon/>}
                                         variant={"outline"}

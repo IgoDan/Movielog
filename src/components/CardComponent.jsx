@@ -36,7 +36,7 @@ const CardComponent = ({item, type}) => {
                     </Text>
                     <Flex alignItems="center" gap="1" justifyContent={"center"}>
                             <Text fontSize="sm" color="gray.400" textTransform="uppercase">
-                                {item?.type === "movie" ? "Movie" : "TV Series"}
+                                {type === "movie" ? "Movie" : "TV Series"}
                             </Text>
                             <Text fontSize="sm" color="gray.400">
                                 -

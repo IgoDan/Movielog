@@ -1,5 +1,5 @@
 import { db } from "../services/firebase";
-import { collection, addDoc, doc, setDoc, getDoc, deleteDoc, updateDoc, getDocs } from 'firebase/firestore'
+import { collection, addDoc, doc, setDoc, getDoc, deleteDoc, updateDoc, getDocs, runTransaction  } from 'firebase/firestore'
 import { useToast } from '@chakra-ui/react';
 import { useCallback } from "react";
 
@@ -21,6 +21,7 @@ export const useFirestore = () => {
         }
         try{
             await setDoc(doc(db, "users", userId, "watchlist", dataId), data);
+            await addRatingToAverage(dataId, data.user_rating);
             toast({
                 title: "Success",
                 description: "Added to watchlist",
@@ -52,7 +53,14 @@ export const useFirestore = () => {
 
     const removeFromWatchlist = async (userId, dataId) => {
         try {
-            await deleteDoc(doc(db, "users", userId?.toString(), "watchlist", dataId?.toString()))
+            const watchlistRef = doc(db, "users", userId, "watchlist", dataId);
+            const docSnap = await getDoc(watchlistRef);
+
+            if (docSnap.exists()) {
+                const userRating = docSnap.data().user_rating;
+                await removeRatingFromAverage(dataId, userRating);
+                await deleteDoc(watchlistRef);
+            }
             toast({
                 title: "Success",
                 description: "Removed from watchlist",
@@ -72,8 +80,16 @@ export const useFirestore = () => {
 
     const updateWatchlist = async (userId, dataId, updatedData) => {
         try {
-            const docRef = doc(db, "users", userId, "watchlist", dataId);
-            await updateDoc(docRef, updatedData);
+            const watchlistRef = doc(db, "users", userId, "watchlist", dataId);
+            const docSnap = await getDoc(watchlistRef);
+
+            if (docSnap.exists()) {
+                const oldRating = docSnap.data().user_rating;
+                const newRating = updatedData.user_rating;
+
+                await updateRatingInAverage(dataId, oldRating, newRating);
+                await updateDoc(watchlistRef, updatedData);
+            }
     
             toast({
                 title: "Success",
@@ -123,7 +139,87 @@ export const useFirestore = () => {
           ...doc.data(),
         }));
         return data;
-      }, []);
+    }, []);
+
+    const addRatingToAverage = async (dataId, rating) => {
+        const ratingsRef = doc(db, "ratings", dataId);
+        const ratingsDoc = await getDoc(ratingsRef);
+
+        let averageRating = 0;
+        let totalRatings = 0;
+
+        if (ratingsDoc.exists()) {
+            averageRating = ratingsDoc.data().averageRating;
+            totalRatings = ratingsDoc.data().totalRatings;
+        }
+
+        totalRatings += 1;
+        averageRating = (averageRating * (totalRatings - 1) + rating) / totalRatings;
+
+        await setDoc(ratingsRef, { averageRating, totalRatings }, { merge: true });
+    };
+
+    const removeRatingFromAverage = async (dataId, rating) => {
+        const ratingsRef = doc(db, "ratings", dataId);
+        const ratingsDoc = await getDoc(ratingsRef);
+
+        let averageRating = 0;
+        let totalRatings = 0;
+
+        if (ratingsDoc.exists()) {
+            averageRating = ratingsDoc.data().averageRating;
+            totalRatings = ratingsDoc.data().totalRatings;
+        }
+
+        if (totalRatings > 1) {
+            averageRating = (averageRating * totalRatings - rating) / (totalRatings - 1);
+            totalRatings -= 1;
+        } else {
+            averageRating = 0;
+            totalRatings = 0;
+        }
+
+        await setDoc(ratingsRef, { averageRating, totalRatings }, { merge: true });
+    };
+
+    const updateRatingInAverage = async (dataId, oldRating, newRating) => {
+        const ratingsRef = doc(db, "ratings", dataId);
+        const ratingsDoc = await getDoc(ratingsRef);
+
+        let averageRating = 0;
+        let totalRatings = 0;
+
+        if (ratingsDoc.exists()) {
+            averageRating = ratingsDoc.data().averageRating;
+            totalRatings = ratingsDoc.data().totalRatings;
+        }
+
+        averageRating = (averageRating * totalRatings - oldRating + newRating) / totalRatings;
+
+        await setDoc(ratingsRef, { averageRating, totalRatings }, { merge: true });
+    };
+
+    const fetchAverageRating = async (dataId) => {
+        try {
+            const docRef = doc(db, "ratings", dataId);
+            const docSnapshot = await getDoc(docRef);
+    
+            if (docSnapshot.exists()) {
+                return docSnapshot.data();
+            } else {
+                console.log("No document for this movie/show");
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching average rating", error);
+            toast({
+                title: "Error",
+                description: "Error while fetching average rating",
+                status: "error",
+                isClosable: true,
+            });
+        }
+    };
 
     return {
         addToWatchlist,
@@ -131,6 +227,7 @@ export const useFirestore = () => {
         removeFromWatchlist,
         updateWatchlist,
         fetchWatchlistElement,
-        getWatchlist
+        getWatchlist,
+        fetchAverageRating
     };
 };

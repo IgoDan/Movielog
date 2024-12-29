@@ -1,14 +1,4 @@
-import {
-    Box,
-    Flex,
-    Heading,
-    IconButton,
-    Image,
-    Text,
-    Tooltip,
-    CircularProgress,
-    CircularProgressLabel,
-    Input
+import {Box, Flex, Heading, IconButton, Image, Text, Tooltip, CircularProgress, CircularProgressLabel, Input
 } from "@chakra-ui/react";
 import { Link } from 'react-router-dom'
 import { imagePath } from '../services/api'
@@ -16,16 +6,18 @@ import { color } from 'framer-motion'
 import { StarIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useFirestore } from '../services/firestore';
 import { useAuth } from '../context/useAuth';
-import { createId, ratingToPercentage, resolveRatingColor } from "../utils/helper";
+import { createId, ratingToPercentage, resolveRatingColor, averageRatingFormat } from "../utils/helper";
 import StarRatingDisplay from "../widgets/StarRatingDisplay";
 import { useEffect, useState } from "react";
 
 const WatchlistComponent = ({ item, type, setWatchlist }) => {
-    const { removeFromWatchlist, checkIfInWatchlist, fetchWatchlistElement } = useFirestore();
+    const { removeFromWatchlist, checkIfInWatchlist, fetchWatchlistElement, fetchAverageRating } = useFirestore();
     const { user } = useAuth();
 
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState('');
+
+    const [averageRating, setAverageRating] = useState(0);
 
     const handleRemoveClick = (event) => {
         event.preventDefault();
@@ -48,6 +40,12 @@ const WatchlistComponent = ({ item, type, setWatchlist }) => {
                 if (watchlistElement) {
                     setRating(watchlistElement.user_rating);
                     setReview(watchlistElement.user_review);
+                }
+            });
+
+            fetchAverageRating(dataId).then((averageRatingData) => {
+                if (averageRatingData) {
+                    setAverageRating(averageRatingData.averageRating);
                 }
             });
         }
@@ -114,12 +112,14 @@ const WatchlistComponent = ({ item, type, setWatchlist }) => {
                             TMDB
                         </Text>
                         <CircularProgress
-                            value={0}
+                            value={averageRatingFormat(averageRating)}
                             size="50px"
-                            color={resolveRatingColor(item?.vote_average)}
+                            color={resolveRatingColor(averageRating)}
                             thickness="6px"
                         >
-                            <CircularProgressLabel fontSize="sm">0</CircularProgressLabel>
+                            <CircularProgressLabel fontSize="sm">
+                                {averageRatingFormat(averageRating)/10}
+                            </CircularProgressLabel>
                         </CircularProgress>
                         <Text fontWeight={"bold"} fontSize="sm">
                             MOVIELOG

@@ -1,16 +1,34 @@
 import { Avatar, Box, Container, Flex, Menu, MenuButton, MenuItem, MenuList, IconButton, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, Button, Text } from "@chakra-ui/react"
-import { HamburgerIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
+import { HamburgerIcon, useToast } from "@chakra-ui/icons";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
 const Navbar = () => {
     const { user, signInWithGoogle, logOut } = useAuth();
     const { onOpen, isOpen, onClose } = useDisclosure();
+    const navigate = useNavigate();
+    const toast = useToast()
 
     const handleGoogleLogin = async () => {
         try {
             await signInWithGoogle();
             console.log("success")
+        } catch (err) {
+            console.log(err, "err")
+        }
+    }
+
+    const handleGoogleLogout = async () => {
+        try {
+            await logOut();
+            console.log("success")
+            toast({
+                title: "Success",
+                description: "User logged out",
+                status: "success",
+                isClosable: true
+            });
+            navigate("/");
         } catch (err) {
             console.log(err, "err")
         }
@@ -43,7 +61,7 @@ const Navbar = () => {
                                     <Link to='/watchlist'>
                                         <MenuItem>Watchlist</MenuItem>
                                     </Link>
-                                    <MenuItem onClick={logOut}>Logout</MenuItem>
+                                    <MenuItem onClick={handleGoogleLogout}>Logout</MenuItem>
                                 </MenuList>
                             </Menu>)}
                     </Flex>
@@ -79,7 +97,7 @@ const Navbar = () => {
                                                 <Link to="/watchlist">Watchlist</Link>
                                                 <Button variant={"outline"}
                                                         colorScheme="red"
-                                                        onClick={logOut}>
+                                                        onClick={handleGoogleLogout}>
                                                     Logout
                                                 </Button>
                                             </>)}
