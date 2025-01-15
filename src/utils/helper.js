@@ -7,6 +7,9 @@ export const averageRatingFormat = (rating) => {
 }
 
 export const resolveRatingColor = (rating) => {
+    if (rating == "-"){
+        return "gray.300"
+    }
     if (rating >= 7) {
         return "green.400"
     } else if (rating >= 5) {

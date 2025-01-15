@@ -1,5 +1,5 @@
 import { db } from "../services/firebase";
-import { collection, addDoc, doc, setDoc, getDoc, deleteDoc, updateDoc, getDocs, runTransaction  } from 'firebase/firestore'
+import { collection, doc, setDoc, getDoc, deleteDoc, updateDoc, getDocs  } from 'firebase/firestore'
 import { useToast } from '@chakra-ui/react';
 import { useCallback } from "react";
 

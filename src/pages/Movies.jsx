@@ -57,7 +57,6 @@ const Movies = () => {
         else{
             RefreshWithSearch()
         }
-        setActivePage(1);
     }, [activePage, sortBy, releaseYear])
 
     return (

@@ -29,7 +29,7 @@ const Details = () => {
     const [initialRating, setInitialRating] = useState(0);
     const [initialReview, setInitialReview] = useState('');
 
-    const [averageRating, setAverageRating] = useState(0);
+    const [averageRating, setAverageRating] = useState("-");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -230,7 +230,7 @@ const Details = () => {
                                                           color={resolveRatingColor(averageRating)} 
                                                           thickness={"6px"}>
                                             <CircularProgressLabel fontSize={"lg"}>
-                                            {averageRatingFormat(averageRating)/10}
+                                            {averageRating == "-" ? "-" : averageRatingFormat(averageRating)/10}
                                             <Box as="span" 
                                                  fontSize={"10px"}></Box>
                                             </CircularProgressLabel>
