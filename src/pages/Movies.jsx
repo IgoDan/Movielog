@@ -17,6 +17,8 @@ const Movies = () => {
 
     const [isLoading, setIsLoading] = useState(true);
 
+    const [debouncedSearchValue, setDebouncedSearchValue] = useState("");
+
     const RefreshNonSearch = () => {
         setIsLoading(true);
         fetchMovies(activePage, sortBy, releaseYear).then((res) => {
@@ -51,13 +53,23 @@ const Movies = () => {
     }
 
     useEffect(() => {
-        if (searchValue === ""){
+        if (debouncedSearchValue === "") {
             RefreshNonSearch()
         }
         else{
             RefreshWithSearch()
         }
-    }, [activePage, sortBy, releaseYear])
+    }, [activePage, sortBy, releaseYear, debouncedSearchValue])
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchValue(searchValue);
+        }, 500);
+    
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [searchValue]);
 
     return (
         <Container maxW={"container.xl"}>

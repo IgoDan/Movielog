@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, Heading, Img, Spinner, Text, Input, Divider, Badge, useToast } from "@chakra-ui/react"
 import { fetchCredits, fetchDetails, imagePath, imagePathOriginal } from "../services/api";
@@ -17,6 +17,8 @@ const Details = () => {
 
     const { user } = useAuth();
     const { addToWatchlist, checkIfInWatchlist, removeFromWatchlist, updateWatchlist, fetchWatchlistElement, fetchAverageRating } = useFirestore();
+
+    const debouncedTimeoutRef = useRef(null);
 
     const [loading, setLoading] = useState(true);
     const [details, setDetails] = useState({});
@@ -82,6 +84,7 @@ const Details = () => {
 
     useEffect(() => {
         if (rating !== initialRating || review !== initialReview){
+            debouncedSave();
             setIsUpdated(true);
         }
     }, [review, rating]);
@@ -142,6 +145,47 @@ const Details = () => {
         setInitialRating(rating);
         setInitialReview(review);
         setIsUpdated(false);
+    };
+
+    const debouncedSave = () => {
+        if (debouncedTimeoutRef.current) {
+            clearTimeout(debouncedTimeoutRef.current);
+        }
+    
+        debouncedTimeoutRef.current = setTimeout(async () => {
+            const dataId = createId(details?.id, type);
+    
+            const updatedData = {
+                user_rating: rating,
+                user_review: review,
+            };
+    
+            try {
+                const watchlistState = await checkIfInWatchlist(user?.uid, dataId);
+                if (!watchlistState) {
+                    const data = {
+                        id: details?.id,
+                        title: details?.title || details?.name,
+                        type: type,
+                        poster_path: details?.poster_path,
+                        release_date: details?.release_date || details?.first_air_date,
+                        vote_average: details?.vote_average,
+                        user_rating: rating,
+                        user_review: review
+                    };
+    
+                    await addToWatchlist(user?.uid, dataId, data);
+                    setIsInWatchlist(true);
+                } else {
+                    await updateWatchlist(user?.uid, dataId, updatedData);
+                }
+    
+                setInitialRating(rating);
+                setInitialReview(review);
+                setIsUpdated(false);
+            } catch (error) {
+            }
+        }, 500);
     };
 
     const title = details?.title || details?.name;
