@@ -53,7 +53,7 @@ const Movies = () => {
     }
 
     useEffect(() => {
-        if (debouncedSearchValue === "") {
+        if (searchValue === "") {
             RefreshNonSearch()
         }
         else{
